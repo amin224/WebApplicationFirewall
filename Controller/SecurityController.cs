@@ -8,10 +8,12 @@ namespace WebApplicationFirewallUE.Controller;
 public class SecurityController : ControllerBase
 {
     private readonly ILogger<SecurityController> _logger;
+    private readonly IConfiguration _configuration;
 
-    public SecurityController(ILogger<SecurityController> logger)
+    public SecurityController(ILogger<SecurityController> logger, IConfiguration configuration)
     {
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpGet]
