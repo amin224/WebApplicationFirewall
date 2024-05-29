@@ -1,4 +1,4 @@
-namespace WebApplicationFirewallUE.Controller;
+namespace WebApplicationFirewallUE.Controllers;
 
 public class RequestInspectionController
 {

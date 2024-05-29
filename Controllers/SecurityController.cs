@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationFirewallUE.Models;
 
-namespace WebApplicationFirewallUE.Controller;
+namespace WebApplicationFirewallUE.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
