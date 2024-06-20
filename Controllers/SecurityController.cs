@@ -37,8 +37,16 @@ public class SecurityController : ControllerBase
         return user;
 
     }
+    
+    [Route("PostContactMessage")]
+    [HttpPost]
+    public async Task<IActionResult> PostContactMessage(ContactFormModel model)
+    {
+        if (model != null) { return Ok("Success"); }
+        else { return BadRequest(); }
+    }
 
-    [HttpGet("anastasiaAmin")]
+    [HttpGet("anastasia")]
     public IActionResult CheckXSS([FromQuery] string message)
     {
         bool storeVariableResult = _securityService.IsXSS(message);
@@ -127,8 +135,4 @@ public class SecurityController : ControllerBase
         return Ok(encodedString);
     }
 }  
-    
-    
-    //[HttpGet("sanitize")]
-    //public string SanitizeInput([FromQuery] string html)
     

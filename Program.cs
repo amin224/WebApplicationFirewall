@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISecurityService, SecurityService>();
 builder.Services.AddSingleton<ISecurityRepository, SecurityRepository>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,4 +25,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers(); // Map controller routes
+app.UseAntiXssMiddleware();
 app.Run();

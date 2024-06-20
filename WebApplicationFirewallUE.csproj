@@ -11,7 +11,9 @@
         <PackageReference Include="AntiXSS.NetStandard.HtmlSanitization" Version="0.1.125" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
         <PackageReference Include="HtmlSanitizer" Version="8.0.865" />
+        <PackageReference Include="IronBox.AntiSQLi.dll" Version="1.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 

@@ -1,12 +1,12 @@
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
-using Microsoft.AspNetCore.Mvc.Filters;
 using WebApplicationFirewallUE.IRepositories;
 using WebApplicationFirewallUE.IServices;
 using WebApplicationFirewallUE.Models;
-using HtmlAgilityPack;
+using Ganss.Xss;
+using Newtonsoft.Json;
+
 
 namespace WebApplicationFirewallUE.Services;
 
@@ -14,7 +14,7 @@ public class SecurityService : ISecurityService
 {
     private ISecurityRepository _securityRepository;
     
-    //______________SQLInjection___________________________//______________SQLInjection______________________//
+    //______________DetectionSQLInjection___________________________//______________DetectionSQLInjection______________________//
     
     string inputHtml = "<p>This is a <b>test</b>. <script>alert('xss');</script> <a href='http://example.com'>Link</a></p>";
     private static readonly string[] SqlInjectionPatterns = new[]
@@ -37,7 +37,6 @@ public class SecurityService : ISecurityService
         /*bool wasSanitized = SanitizeHtml(inputHtml, out string sanitizedHtml);*/
     }
     
-
     public void AnastasiaFunction(int amin)
     {
         Console.WriteLine("call me");
@@ -68,7 +67,30 @@ public class SecurityService : ISecurityService
         return false;
     }
     
-    //______________XSSInjection___________________________//______________XSSInjection_______________________//
+    
+    //______________PreventingSQLInjection___________________________//______________PreventingSQLInjection______________________//
+
+    /*using (var connection = new SqlConnection("ConnectionString"))
+    {
+        connection.Open();
+    
+        var query = "SELECT * FROM Users WHERE Username = @username AND Password = @password";
+    
+        using (var command = new SqlCommand(query, connection))
+        {
+            command.Parameters.Add(new SqlParameter("@username", SqlDbType.VarChar) { Value = username });
+            command.Parameters.Add(new SqlParameter("@password", SqlDbType.VarChar) { Value = password });
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    // Process the data
+                }
+            }
+        }
+    }*/
+    //______________DetectionXSSInjection___________________________//______________DetectionXSSInjection_______________________//
     
     public bool IsXSS(string message)
     {
@@ -77,8 +99,9 @@ public class SecurityService : ISecurityService
             @"<script[^>]*>.*?</script\s*>",
             @"<.*?script.*?>",
             @"onmouseover\s*=\s*(['""]).*?\1",
-            @"onload\s*=\s*(['""]).*?\1"
-        };
+            @"onload\s*=\s*(['""]).*?\1",
+            @"<img src=""http://url.to.file.which/not.exist"" onerror=alert(document.cookie);>",
+            };
 
         foreach (string pattern in patterns)
         {
@@ -90,131 +113,13 @@ public class SecurityService : ISecurityService
 
         return false; // No XSS pattern detected
     }
-    
-//______________HtmlSanitizer___________________________//______________HtmlSanitizer_______________________//     
-
     public bool SanitizeHtml(string message)
     {
-        string sanitizedHtml;
-        if (string.IsNullOrEmpty(message))
-        {
-            sanitizedHtml = string.Empty;
-            return false;
-        }
-        //initializes a new array whitelistTags : Bold text, i: Italic text, u: Underlined text, em: Emphasized text, strong: Strongly emphasized text, a: hyperlinks
-        var whitelistTags = new string[] { "b", "i", "u", "em", "strong", "a" };
-        var doc = new HtmlDocument();
-        doc.LoadHtml(message);
-
-        // Remove script and style nodes
-        RemoveNodes(doc, "//script|//style");
-
-        // Remove all comments
-        RemoveNodes(doc, "//comment()");
-
-        // Remove attributes that are not safe
-        RemoveUnsafeAttributes(doc);
-
-        // Keep only whitelisted tags and their content
-        SanitizeNodes(doc.DocumentNode, whitelistTags);
-
-        sanitizedHtml = doc.DocumentNode.InnerHtml;
-        var lastCheck = !sanitizedHtml.Equals(message, StringComparison.Ordinal);
-        if (lastCheck == true)
-            return true;
-
-        return false;
+        return true;
     }
 
-    private static void RemoveNodes(HtmlDocument doc, string xpath)
-    {
-        var nodes = doc.DocumentNode.SelectNodes(xpath);
-        if (nodes != null)
-        {
-            foreach (var node in nodes)
-            {
-                node.ParentNode.RemoveChild(node);
-            }
-        }
-    }
+    //______________PreventingXSSInjection___________________________//______________PreventingXSSInjection______________________//     
 
-    private static void RemoveUnsafeAttributes(HtmlDocument doc)
-    {
-        //method SelectNodes selects all nodes and matches all elements in the document
-        var nodes = doc.DocumentNode.SelectNodes("//*");
-        //if the document doesn't contains any nodes, nodes will be null
-        if (nodes != null)
-        {
-            //starts a loop to check all nodes
-            foreach (var node in nodes)
-            {
-                //removes class, style, onclick, and any other attributes
-                node.Attributes.RemoveAll();
-            }
-        }
-    }
-
-    private static void SanitizeNodes(HtmlNode node, string[] whitelistTags)
-    {
-        // checks current node is an element node
-        if (node.NodeType == HtmlNodeType.Element)
-        {
-            // checks if current node (node.Name) is in the whitelistTags array
-            if (Array.IndexOf(whitelistTags, node.Name) == -1)
-            {
-                // if the node is not in the whitelist, remove it but keep its content
-                var parent = node.ParentNode;
-                if (parent != null)
-                {
-                    foreach (var child in node.ChildNodes)
-                    {
-                        parent.InsertBefore(child, node);
-                    }
-                    parent.RemoveChild(node);
-                }
-            }
-            else
-            {
-                // clean the attributes of whitelisted tags
-                CleanAttributes(node);
-            }
-        }
-
-        foreach (var childNode in node.ChildNodes)
-        {
-            SanitizeNodes(childNode, whitelistTags);
-        }
-    }
-
-    private static void CleanAttributes(HtmlNode node)
-    {
-        // check node is an <a> which is a hyperlink
-        if (node.Name == "a")
-        {
-            // get href attribute and check if it is a safe UR
-            var href = node.GetAttributeValue("href", string.Empty);
-            if (IsSafeUrl(href))
-            {
-                // remove all attributes and add back the safe href:
-                node.Attributes.RemoveAll();
-                node.Attributes.Add("href", href);
-            }
-            else
-            {
-                node.Attributes.RemoveAll();
-            }
-        }
-        else
-        {
-            node.Attributes.RemoveAll();
-        }
-    }
-
-    private static bool IsSafeUrl(string url)
-    {
-        // create a new Uri object from the provided URL string
-        return Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
-               (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-    }
     
 }
+
