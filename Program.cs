@@ -1,7 +1,9 @@
 using System.IO.Abstractions;
 using System.Text;
 using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -36,8 +38,12 @@ builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
 builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
 builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
-builder.Services.Configure<FileUploadInfo>(
-    builder.Configuration.GetSection("FileUploadInfo"));
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+    options.HttpOnly = HttpOnlyPolicy.Always;
+    options.Secure = CookieSecurePolicy.Always;
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -94,15 +100,33 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<CustomRateLimitResponse>();
 app.UseCors(options =>
 {
-    options.AllowAnyMethod()
-        .AllowAnyOrigin()
+    options.WithMethods("GET", "POST")
+        .WithOrigins("http://localhost:3000")
         .AllowAnyHeader();
 });
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.MapControllers();
 app.UseAuthorization();
+app.UseCookiePolicy();
+
+var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
+app.Use((context, next) =>
+{
+    var requestPath = context.Request.Path.Value;
+
+    if (string.Equals(requestPath, "/", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(requestPath, "/index.html", StringComparison.OrdinalIgnoreCase))
+    {
+        var tokenSet = antiforgery.GetAndStoreTokens(context);
+        context.Response.Cookies.Append("XSRF-TOKEN", tokenSet.RequestToken!,
+            new CookieOptions { HttpOnly = false });
+    }
+
+    return next(context);
+});
 
 using (var scope = app.Services.CreateScope())
 {

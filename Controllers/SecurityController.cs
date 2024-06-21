@@ -8,6 +8,7 @@ namespace WebApplicationFirewallUE.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AutoValidateAntiforgeryToken]
 public class SecurityController : ControllerBase
 {
     private readonly ILogger<SecurityController> _logger;
