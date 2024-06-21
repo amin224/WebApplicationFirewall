@@ -1,0 +1,14 @@
+C:\Goksel\dev\WebAppFirewall\AttackerTool\bin\Debug\net8.0\AttackerTool.exe
+C:\Goksel\dev\WebAppFirewall\AttackerTool\bin\Debug\net8.0\AttackerTool.deps.json
+C:\Goksel\dev\WebAppFirewall\AttackerTool\bin\Debug\net8.0\AttackerTool.runtimeconfig.json
+C:\Goksel\dev\WebAppFirewall\AttackerTool\bin\Debug\net8.0\AttackerTool.dll
+C:\Goksel\dev\WebAppFirewall\AttackerTool\bin\Debug\net8.0\AttackerTool.pdb
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.GeneratedMSBuildEditorConfig.editorconfig
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.AssemblyInfoInputs.cache
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.AssemblyInfo.cs
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.csproj.CoreCompileInputs.cache
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.dll
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\refint\AttackerTool.dll
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.pdb
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\AttackerTool.genruntimeconfig.cache
+C:\Goksel\dev\WebAppFirewall\AttackerTool\obj\Debug\net8.0\ref\AttackerTool.dll
