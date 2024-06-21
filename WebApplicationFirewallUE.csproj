@@ -12,6 +12,7 @@
         <PackageReference Include="Audit.NET.PostgreSql" Version="19.4.0" />
         <PackageReference Include="Audit.WebApi.Core" Version="19.0.6" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="HtmlSanitizer" Version="8.0.865" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3"/>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.6" />

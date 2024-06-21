@@ -15,14 +15,16 @@ public class SecurityController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly AuditConfiguration _auditConfiguration;
     private readonly IFileInclusionService _fileInclusionService;
+    private readonly ISecurityService _securityService;
 
     public SecurityController(ILogger<SecurityController> logger, IConfiguration configuration, 
-        AuditConfiguration auditConfiguration, IFileInclusionService fileInclusionService)
+        AuditConfiguration auditConfiguration, IFileInclusionService fileInclusionService, ISecurityService securityService)
     {
         _logger = logger;
         _configuration = configuration;
         _auditConfiguration = auditConfiguration;
         _fileInclusionService = fileInclusionService;
+        _securityService = securityService;
     }
 
     [HttpGet]
@@ -89,5 +91,24 @@ public class SecurityController : ControllerBase
         return Ok(checkUrl.Result);
     }
     
+    [Route("PostContactMessage")]
+    [HttpPost]
+    public async Task<IActionResult> PostContactMessage(ContactFormModel model)
+    {
+        if (model != null) { return Ok("Success"); }
+
+        return BadRequest();
+    }
     
+    [HttpGet("check")]
+    public IActionResult CheckSql([FromQuery] string message)
+    {
+        //string result = "' OR '1'='1";
+        Console.WriteLine("My received message was: " + message);
+        var callFromService = _securityService.IsSqlInjection(message);
+        
+        Console.WriteLine("The request for SQL Injection is: " + callFromService);
+
+        return Ok(callFromService);
+    }
 }

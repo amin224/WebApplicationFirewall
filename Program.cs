@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using WebApplicationFirewallUE.IRepositories;
 using WebApplicationFirewallUE.IServices;
-using WebApplicationFirewallUE.Models;
+using WebApplicationFirewallUE.Middleware;
 using WebApplicationFirewallUE.Repositories;
 using WebApplicationFirewallUE.Services;
 using WebApplicationFirewallUE.Static;
@@ -109,6 +109,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.MapControllers();
+app.UseAntiXssMiddleware();
 app.UseAuthorization();
 app.UseCookiePolicy();
 
