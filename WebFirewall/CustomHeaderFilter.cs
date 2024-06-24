@@ -24,7 +24,7 @@ namespace WebFirewall
             context.Result = new ContentResult
             {
                 StatusCode = StatusCodes.Status403Forbidden,
-                Content = Messages.BadCustomHeaderMessage
+                Content = Messages.BadCustomHeader
             };
         }
     }

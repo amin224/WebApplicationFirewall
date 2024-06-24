@@ -15,7 +15,7 @@ namespace WebFirewall
             if (context.Request.QueryString.Value.Contains("DROP TABLE"))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync(Messages.SqlInjectionBannedMessage);
+                await context.Response.WriteAsync(Messages.SqlInjectionBanned);
                 return false;
             }
 

@@ -24,7 +24,7 @@ namespace WebFirewall
             // Checking  query parameters
             if (ContainsXss(context.Request.QueryString.Value))
             {
-                await BlockRequestAsync(context, Messages.XssBannedMessage);
+                await BlockRequestAsync(context, Messages.XssBanned);
                 return false;
             }
 
@@ -35,7 +35,7 @@ namespace WebFirewall
                 {
                     if (ContainsXss(context.Request.Form[key]))
                     {
-                        await BlockRequestAsync(context, Messages.XssBannedMessage);
+                        await BlockRequestAsync(context, Messages.XssBanned);
                         return false;
                     }
                 }
@@ -46,7 +46,7 @@ namespace WebFirewall
             {
                 if (ContainsXss(header.Value.ToString()))
                 {
-                    await BlockRequestAsync(context, Messages.XssBannedMessage);
+                    await BlockRequestAsync(context, Messages.XssBanned);
                     return false;
                 }
             }

@@ -14,68 +14,66 @@ namespace WebFirewall
             string clientIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
             var now = DateTime.UtcNow;
 
-            if (!_clientRequest.TryGetValue(clientIp, out var clientRequest))
+            // Add new client or update existing client request
+            _clientRequest.AddOrUpdate(clientIp,
+                new ClientRequest(1, now, 0),
+                (key, existingClientRequest) => UpdateClientRequest(existingClientRequest, now));
+
+            ClientRequest clientRequest = _clientRequest[clientIp];
+
+            // Check if the client is currently blocked
+            if (IsClientBlocked(clientRequest, now))
             {
-                clientRequest = new ClientRequest(1, now, 0);
-                _clientRequest[clientIp] = clientRequest;
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync(Messages.Banned);
+                return false;
             }
-            else
+
+            // Check if the request count exceeds the limit
+            if (clientRequest.RequestCount > Settings.MaxRequestsPerMin)
             {
-                // Checking whether the client is already blocked
-                if (IsClientBlocked(clientRequest, now))
-                {
-                    await BlockClientAsync(context);
-                    return false;
-                }
-
-                // Reset count for this ip if the reset time has passed
-                if (ShouldResetRequestCount(clientRequest, now))
-                {
-                    ResetClientRequest(clientRequest, now);
-                }
-
-                // check the request count is over certain time limit
-                if (clientRequest.RequestCount > Settings.MaxRequestsPerMin)
-                {
-                    // Set duration time for blocking and update the last request time
-                    clientRequest.BlockDuration = Settings.DefaultBlockDurationSec;
-                    clientRequest.LastRequestTime = now;
-                    await BlockClientAsync(context);
-                    return false;
-                }
-
-                // Incrementing each request for same ip
-                clientRequest.RequestCount++;
-
-                // Update latest request time
+                // Set block duration and update the last request time
+                clientRequest.BlockDuration = clientRequest.BlockDuration == 0 ?
+                    Settings.DefaultBlockDurationSec : Settings.DefaultExtendedBlockDurationSec;
                 clientRequest.LastRequestTime = now;
+
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync(Messages.Banned);
+                return false;
             }
 
             return true;
         }
 
+        // Update client request: reset if needed, increment request count, update last request time
+        private ClientRequest UpdateClientRequest(ClientRequest clientRequest, DateTime now)
+        {
+            if (ShouldResetRequestCount(clientRequest, now))
+            {
+                ResetClientRequest(clientRequest, now);
+            }
+
+            clientRequest.RequestCount++;
+            clientRequest.LastRequestTime = now;
+
+            return clientRequest;
+        }
+
+        // Check if the client is within the block period
         private static bool IsClientBlocked(ClientRequest clientRequest, DateTime now)
         {
-            // Check whether the current time is in the block period
             return now < clientRequest.LastRequestTime.AddSeconds(clientRequest.BlockDuration);
         }
 
-        private static async Task BlockClientAsync(HttpContext context)
-        {
-            // Set forbidden status and return a message
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await context.Response.WriteAsync(Messages.BannedMessage);
-        }
-
+        // Check if the reset time has passed
         private static bool ShouldResetRequestCount(ClientRequest clientRequest, DateTime now)
         {
-            // check the reset time has passed
             return now >= clientRequest.LastRequestTime.Add(Settings.ResetTime);
         }
 
+        // Reset client request parameters
         private static void ResetClientRequest(ClientRequest clientRequest, DateTime now)
         {
-            // Reset parameters
             clientRequest.RequestCount = 0;
             clientRequest.BlockDuration = 0;
             clientRequest.LastRequestTime = now;

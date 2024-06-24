@@ -14,6 +14,7 @@ namespace WebFirewall
         private readonly XssSecurity _xssSecurity;
         private readonly CsrfSecurity _csrfSecurity;
         private readonly FileInclusionSecurity _fileInclusionSecurity;
+        private readonly UserAgentFilteringSecurity _userAgentFilteringSecurity;
 
         public Init(RequestDelegate next)
         {
@@ -25,6 +26,7 @@ namespace WebFirewall
             _xssSecurity = new XssSecurity();
             _csrfSecurity = new CsrfSecurity();
             _fileInclusionSecurity = new FileInclusionSecurity();
+            _userAgentFilteringSecurity = new UserAgentFilteringSecurity();
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -61,6 +63,11 @@ namespace WebFirewall
                     if (!await _fileInclusionSecurity.CheckRequestAsync(context)) return;
                 }
 
+                if (Settings.isUserAgentFilteringSecurityActive)
+                {
+                    if (!await _userAgentFilteringSecurity.CheckRequestAsync(context)) return;
+                }
+
                 // Call the target method if it has passed all security checks above
                 // this line forward the request to target address/method
                 await _next(context);
@@ -68,7 +75,7 @@ namespace WebFirewall
             catch
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsync("There is an internal error. Try again later");
+                await context.Response.WriteAsync(Messages.Error);
 
             }
         }
