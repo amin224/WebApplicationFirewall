@@ -29,7 +29,7 @@ namespace AttackerTool
 
         public static readonly List<string> LoopbackIPs = new()
         {
-            "127.0.0.1", "127.0.0.2", "127.0.0.3", "127.0.0.4"
+            "127.0.0.1", "127.0.0.2"
         };
 
         public static List<HttpStatusCode> BlockedStatusCode = new List<HttpStatusCode>()

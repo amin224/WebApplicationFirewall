@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AttackerTool
 {
-    public static class HttpDDoSLoopbackIP
+    public static class HttpDDoSLoopbackIp
     {
         public static async Task Start(string targetUrl, ushort port, int limit)
         {

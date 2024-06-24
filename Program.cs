@@ -69,7 +69,7 @@ class Program
                 await HttpFlood.Start(targetUrl, port, limit);
                 break;
             case "ddos-loopback":
-                await HttpDDoSLoopbackIP.Start(targetUrl, port, limit);
+                await HttpDDoSLoopbackIp.Start(targetUrl, port, limit);
                 break;
             case "ddos-proxy":
                 await HttpDDoSProxy.Start(targetUrl, port, limit);
