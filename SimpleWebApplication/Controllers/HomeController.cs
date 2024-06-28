@@ -19,6 +19,8 @@ namespace SimpleWebApplication.Controllers
 
         public IActionResult Index()
         {
+            // this line will be moved under login post action. it is here as temp
+            CustomHeaderSecurity.AddCustomHeaderAsync(HttpContext);
             return View();
         }
 

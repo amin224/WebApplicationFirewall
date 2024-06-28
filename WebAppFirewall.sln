@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebFirewall", "WebFirewall\WebFirewall.csproj", "{0305BC3E-5737-4239-8C66-B5F0D9BF7866}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleWebApplication", "SimpleWebApplication\SimpleWebApplication.csproj", "{FE5DA8C6-8BE6-4D1A-A2E4-B47AE4030A63}"
 EndProject
 Global
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0305BC3E-5737-4239-8C66-B5F0D9BF7866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0305BC3E-5737-4239-8C66-B5F0D9BF7866}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0305BC3E-5737-4239-8C66-B5F0D9BF7866}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0305BC3E-5737-4239-8C66-B5F0D9BF7866}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE5DA8C6-8BE6-4D1A-A2E4-B47AE4030A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE5DA8C6-8BE6-4D1A-A2E4-B47AE4030A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE5DA8C6-8BE6-4D1A-A2E4-B47AE4030A63}.Release|Any CPU.ActiveCfg = Release|Any CPU

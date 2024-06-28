@@ -9,7 +9,8 @@ using SimpleWebApplication.Engines;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Repositories;
 using StackExchange.Redis;
-using WebApplicationFirewallUE.Middleware;
+
+var isRateLimitingActive = false;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -17,23 +18,27 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 builder.Services.AddDbContext<MyAppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("MyAppDbConnection")));
 
-var redisConfiguration = builder.Configuration["Redis:Configuration"];
-var redis = ConnectionMultiplexer.Connect(redisConfiguration);
+// var redisConfiguration = builder.Configuration["Redis:Configuration"];
+// var redis = ConnectionMultiplexer.Connect(redisConfiguration);
 
-builder.Services.AddStackExchangeRedisCache(options =>
+//builder.Services.AddStackExchangeRedisCache(options =>
+//{
+//    options.Configuration = redisConfiguration;
+//});
+
+// builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
+
+if (isRateLimitingActive)
 {
-    options.Configuration = redisConfiguration;
-});
-builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
+    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfigurationService>();
+    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+    builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
 
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfigurationService>();
-builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
-builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
-
-builder.Services.AddSingleton<IClientResolveContributor, CustomClientResolver>();
-builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
-builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
-builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+    builder.Services.AddSingleton<IClientResolveContributor, CustomClientResolver>();
+    builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+    builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+    builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+}
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers(configure =>
@@ -42,13 +47,14 @@ builder.Services.AddControllers(configure =>
     AuditConfiguration.ConfigureAudit(builder.Services);
 });
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSingleton<AuditConfiguration, AuditConfiguration>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IEmailEngine, EmailEngine>();
 
-// web firewall custom application
-builder.Services.AddSingleton<WebFirewall.CustomHeaderFilter>();
+// web firewall custom filtering
+builder.Services.AddScoped<WebFirewall.CustomHeaderFilter>();
 
 builder.Services.AddAuthentication(x =>
     {
@@ -82,7 +88,20 @@ if (!app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseMiddleware<CustomRateLimitResponse>();
+// web firewall
+if (isRateLimitingActive)
+{
+    app.UseMiddleware<CustomRateLimitResponse>();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var ipPolicyStore = scope.ServiceProvider.GetRequiredService<IIpPolicyStore>();
+        await ipPolicyStore.SeedAsync();
+    }
+}
+
+app.UseMiddleware<WebFirewall.Init>();
+
 app.UseCors(options =>
 {
     options.WithMethods("GET", "POST")
@@ -93,18 +112,8 @@ app.UseCors(options =>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAntiXssMiddleware();
 app.UseAuthorization();
 app.UseCookiePolicy();
-
-using (var scope = app.Services.CreateScope())
-{
-    var ipPolicyStore = scope.ServiceProvider.GetRequiredService<IIpPolicyStore>();
-    await ipPolicyStore.SeedAsync();
-}
-
-// web firewall
-app.UseMiddleware<WebFirewall.Init>();
 
 app.MapControllerRoute(
     name: "default",
