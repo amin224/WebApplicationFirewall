@@ -6,3 +6,17 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<form asp-controller="Home" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="uploadForm">
+    <div class="form-group">
+        <label for="file">Choose a file to upload:</label>
+        <input type="file" class="form-control-file" id="file" name="file">
+    </div>
+    <button type="button" class="btn btn-primary" id="uploadButton">Upload File</button>
+</form>
+
+<script>
+    document.getElementById('uploadButton').addEventListener('click', function() {
+        document.getElementById('uploadForm').submit();
+    });
+</script>

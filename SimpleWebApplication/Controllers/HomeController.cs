@@ -40,7 +40,14 @@ namespace SimpleWebApplication.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        
+
+        [HttpPost]
+        public IActionResult UploadFile(IFormFile file)
+        {
+            Console.Write("true");
+            return Ok();
+        }
+
         [HttpPost]
         [Route("GenerateToken")]
         public IActionResult GenerateToken([FromBody] LoginRequest loginRequest)
