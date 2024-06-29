@@ -5,7 +5,7 @@ using nClam;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public partial class FileInclusionSecurity
     {

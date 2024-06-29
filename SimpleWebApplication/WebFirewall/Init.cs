@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using SimpleWebApplication.Helpers;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using SimpleWebApplication.Helpers;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class Init
     {
@@ -11,7 +8,7 @@ namespace WebFirewall
         private readonly DDoSSecurity _dDoSSecurity;
         private readonly SqlInjectionSecurity _sqlInjectionSecurity;
         private readonly AntiXssSecurity _antiXssSecurity;
-        private readonly FileInclusionSecurity _fileInclusionSecurity;
+        private readonly SimpleWebApplication.WebFirewall.FileInclusionSecurity _fileInclusionSecurity;
         private readonly UserAgentFilteringSecurity _userAgentFilteringSecurity;
 
         public Init(RequestDelegate next, AuditConfiguration auditConfiguration)
@@ -21,7 +18,7 @@ namespace WebFirewall
             _userAgentFilteringSecurity = new UserAgentFilteringSecurity(auditConfiguration);
             _sqlInjectionSecurity = new SqlInjectionSecurity(auditConfiguration);
             _antiXssSecurity = new AntiXssSecurity(auditConfiguration);
-            _fileInclusionSecurity = new FileInclusionSecurity(auditConfiguration);
+            _fileInclusionSecurity = new SimpleWebApplication.WebFirewall.FileInclusionSecurity(auditConfiguration);
         }
 
         public async Task InvokeAsync(HttpContext context)

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WebFirewall
+﻿namespace SimpleWebApplication.WebFirewall
 {
     public class ClientRequest
     {

@@ -1,9 +1,8 @@
 ﻿using Audit.WebApi;
-using Microsoft.AspNetCore.Http;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class UserAgentFilteringSecurity
     {

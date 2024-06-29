@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class AntiXssSecurity
     {

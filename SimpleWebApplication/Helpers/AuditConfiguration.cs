@@ -6,8 +6,13 @@ using SimpleWebApplication.Models;
 
 namespace SimpleWebApplication.Helpers;
 
-public class AuditConfiguration(IHttpContextAccessor httpContextAccessor)
+public class AuditConfiguration
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public AuditConfiguration(IHttpContextAccessor httpContextAccessor)
+    {
+        this._httpContextAccessor = httpContextAccessor;
+    }
     // Enables audit log with a global Action Filter
     public static void AddAudit(MvcOptions mvcOptions)
     {
@@ -62,7 +67,7 @@ public class AuditConfiguration(IHttpContextAccessor httpContextAccessor)
 
     public void AuditCustomFields(LogTraceOperation logTrace)
     {
-        SetCustomField(httpContextAccessor.HttpContext!, "Attack", logTrace.Attack);
-        SetCustomField(httpContextAccessor.HttpContext!, "Type", logTrace.Type);
+        SetCustomField(_httpContextAccessor.HttpContext!, "Attack", logTrace.Attack);
+        SetCustomField(_httpContextAccessor.HttpContext!, "Type", logTrace.Type);
     }
 }

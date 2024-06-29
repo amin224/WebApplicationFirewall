@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class CustomHeaderFilter : IAsyncActionFilter
     {

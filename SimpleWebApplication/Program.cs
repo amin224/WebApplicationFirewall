@@ -8,6 +8,7 @@ using SimpleWebApplication.Customs;
 using SimpleWebApplication.Engines;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Repositories;
+using SimpleWebApplication.WebFirewall;
 using StackExchange.Redis;
 
 var isRateLimitingActive = false;
@@ -54,7 +55,7 @@ builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IEmailEngine, EmailEngine>();
 
 // web firewall custom filtering
-builder.Services.AddScoped<WebFirewall.CustomHeaderFilter>();
+builder.Services.AddScoped<CustomHeaderFilter>();
 
 builder.Services.AddAuthentication(x =>
     {
@@ -100,7 +101,7 @@ if (isRateLimitingActive)
     }
 }
 
-app.UseMiddleware<WebFirewall.Init>();
+app.UseMiddleware<Init>();
 
 app.UseCors(options =>
 {

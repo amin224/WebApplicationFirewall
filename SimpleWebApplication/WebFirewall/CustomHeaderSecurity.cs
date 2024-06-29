@@ -1,4 +1,4 @@
-﻿namespace WebFirewall
+﻿namespace SimpleWebApplication.WebFirewall
 {
     public static class CustomHeaderSecurity
     {

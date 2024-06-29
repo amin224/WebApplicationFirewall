@@ -3,7 +3,7 @@ using Audit.WebApi;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class SqlInjectionSecurity
     {

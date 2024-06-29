@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleWebApplication.Models;
 using System.Diagnostics;
 using SimpleWebApplication.Helpers;
-using WebFirewall;
+using SimpleWebApplication.WebFirewall;
 
 namespace SimpleWebApplication.Controllers
 {

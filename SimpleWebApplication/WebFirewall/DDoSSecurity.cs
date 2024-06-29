@@ -1,12 +1,9 @@
-﻿using Audit.WebApi;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Concurrent;
+using Audit.WebApi;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
-using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
-namespace WebFirewall
+namespace SimpleWebApplication.WebFirewall
 {
     public class DDoSSecurity
     {
