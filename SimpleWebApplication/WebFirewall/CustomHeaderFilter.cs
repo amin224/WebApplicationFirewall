@@ -3,27 +3,58 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SimpleWebApplication.Helpers;
 using SimpleWebApplication.Models;
+using System.Threading.Tasks;
+using StackExchange.Redis;
 
 namespace SimpleWebApplication.WebFirewall
 {
     public class CustomHeaderFilter : IAsyncActionFilter
     {
         private readonly AuditConfiguration _auditConfiguration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string _headerName;
+        private readonly string _headerValue;
 
-        public CustomHeaderFilter(AuditConfiguration auditConfiguration)
+        public CustomHeaderFilter(AuditConfiguration auditConfiguration, string headerName, string headerValue)
         {
             _auditConfiguration = auditConfiguration;
+            _headerName = headerName;
+            _headerValue = headerValue;
         }
 
         [AuditApi]
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             // Check whether custom header is exists and correct
-            if (context.HttpContext.Request.Headers.TryGetValue(Settings.CustomHeaderName, out var headerValue))
+            //var httpContext = _httpContextAccessor.HttpContext;
+            //string headerName = Settings.CustomHeaderName;
+            //string headerValue = Settings.CustomHeaderValue;
+
+            //if (httpContext.Request.Path.Value.Contains("MyProcess"))
+            //{
+            //    headerName = "MyProcess";
+            //    headerValue = "Pending";
+            //}
+            //else if (httpContext.Request.Path.Value.Contains("MoneyTransfer"))
+            //{
+            //    headerName = "MoneyTransfer";
+            //    headerValue = "Approved";
+            //}
+
+
+            //if (context.HttpContext.Request.Headers.TryGetValue(headerName, out var actualHeaderValue))
+            //{
+            //    if (actualHeaderValue == headerValue)
+            //    {
+            //        await next();
+            //        return;
+            //    }
+            //}
+
+            if (context.HttpContext.Request.Headers.TryGetValue(_headerName, out var actualHeaderValue))
             {
-                if (headerValue == Settings.CustomHeaderValue)
+                if (actualHeaderValue == _headerValue)
                 {
-                    // continue to the action if header value is correct
                     await next();
                     return;
                 }
@@ -39,8 +70,6 @@ namespace SimpleWebApplication.WebFirewall
                 StatusCode = StatusCodes.Status403Forbidden,
                 Content = Messages.BadCustomHeader
             };
-
-
         }
     }
 }

@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Create a New Account</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success" id="registrationSuccessMessage">
+        @ViewBag.SuccessMessage
+    </div>
+}
+else if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger" id="registrationErrorMessage">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<p></p>
+
+<form method="post" asp-action="Register" id="registrationForm">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+        <small class="form-text text-muted">Username must be at least 8 characters long and contain only letters and numbers.</small>
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+        <small class="form-text text-muted">Please enter a valid email address.</small>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+        <small class="form-text text-muted">Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.</small>
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Account</button>
+</form>
+
+<div class="mt-4">
+    <p>Imprtant Note: After registration please upload your resident permit file using the "Send Document" menu to finish the process.</p>
+</div>
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+}

@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Send Document";
+}
+
+<h2>Send Document</h2>
+<form asp-action="SendDocument" method="post" enctype="multipart/form-data" id="uploadForm">
+    <div class="form-group">
+        <label for="file">Choose a file to upload:</label>
+        <input type="file" class="form-control" id="file" name="file" required>
+    </div>
+    <button type="submit" class="btn btn-primary" id="uploadButton">Send Document</button>
+</form>
+
+@* <script>
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        document.getElementById('uploadForm').submit();
+    });
+</script> *@

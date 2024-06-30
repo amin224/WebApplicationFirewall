@@ -8,7 +8,7 @@ namespace SimpleWebApplication.WebFirewall
         private readonly DDoSSecurity _dDoSSecurity;
         private readonly SqlInjectionSecurity _sqlInjectionSecurity;
         private readonly AntiXssSecurity _antiXssSecurity;
-        private readonly SimpleWebApplication.WebFirewall.FileInclusionSecurity _fileInclusionSecurity;
+        private readonly FileInclusionSecurity _fileInclusionSecurity;
         private readonly UserAgentFilteringSecurity _userAgentFilteringSecurity;
 
         public Init(RequestDelegate next, AuditConfiguration auditConfiguration)
@@ -23,6 +23,15 @@ namespace SimpleWebApplication.WebFirewall
 
         public async Task InvokeAsync(HttpContext context)
         {
+
+            // if request path exist in ignored path list then bypass security check
+            var requestPath = context.Request.Path.ToString();
+            if (Settings.IgnoredPaths.Any(path => requestPath.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
+            {
+                await _next(context);
+                return;
+            }
+
             try
             {
                 if (Settings.isDDoSSecurityActive)
@@ -35,7 +44,7 @@ namespace SimpleWebApplication.WebFirewall
                     if (!await _sqlInjectionSecurity.CheckRequestAsync(context)) return;
                 }
 
-                if (Settings.isXssSecurityActive)
+                if (Settings.isAntiXssSecurityActive)
                 {
                     if (!await _antiXssSecurity.CheckRequestAsync(context)) return;
                 }

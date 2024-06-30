@@ -54,8 +54,35 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IEmailEngine, EmailEngine>();
 
-// web firewall custom filtering
-builder.Services.AddScoped<CustomHeaderFilter>();
+// builder.Services.AddScoped<CustomHeaderFilter>(provider =>
+//{
+//    var auditConfiguration = provider.GetRequiredService<AuditConfiguration>();
+//    var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+//    var httpContext = httpContextAccessor.HttpContext;
+
+//    string headerName = "CustomHeader";
+//    string headerValue = string.Empty;
+
+//    if (httpContext != null)
+//    {
+//        if (httpContext.Request.Path.Value.Contains("MyProcess"))
+//        {
+//            headerValue = "Pending";
+//        }
+//        else if (httpContext.Request.Path.Value.Contains("TransferMoney"))
+//        {
+//        }
+//    }
+
+//    return new CustomHeaderFilter(auditConfiguration, headerName, headerValue);
+//});
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddAuthentication(x =>
     {
@@ -89,6 +116,13 @@ if (!app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseSession();
+app.UseAuthorization();
+app.UseCookiePolicy();
+
 // web firewall
 if (isRateLimitingActive)
 {
@@ -101,6 +135,7 @@ if (isRateLimitingActive)
     }
 }
 
+// web firewall
 app.UseMiddleware<Init>();
 
 app.UseCors(options =>
@@ -113,6 +148,7 @@ app.UseCors(options =>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 app.UseCookiePolicy();
 

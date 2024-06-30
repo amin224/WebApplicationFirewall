@@ -2,21 +2,51 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to X Bank</h1>
+    <p class="lead">Your trusted partner in financial services. Explore our wide range of banking solutions designed to help you achieve your financial goals.</p>
+    <hr class="my-4">
+    <p>Sign up today to experience seamless banking with top-notch security and customer support.</p>
+    @if (Context.Session.GetString("Username") == null)
+    {
+        <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Login" role="button">Login</a>
+        <a class="btn btn-success btn-lg" asp-controller="Home" asp-action="Register" role="button">Create Account</a>
+    }
 </div>
 
-<form asp-controller="Home" asp-action="UploadFile" method="post" enctype="multipart/form-data" id="uploadForm">
-    <div class="form-group">
-        <label for="file">Choose a file to upload:</label>
-        <input type="file" class="form-control-file" id="file" name="file">
-    </div>
-    <button type="button" class="btn btn-primary" id="uploadButton">Upload File</button>
-</form>
+<p></p>
 
-<script>
-    document.getElementById('uploadButton').addEventListener('click', function() {
-        document.getElementById('uploadForm').submit();
-    });
-</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img class="card-img-top" src="~/images/personal_banking.jpg" alt="Personal Banking" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Personal Banking</h5>
+                    <p class="card-text">Manage your personal finances with our comprehensive personal banking solutions.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img class="card-img-top" src="~/images/business_banking.jpg" alt="Business Banking" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Business Banking</h5>
+                    <p class="card-text">Grow your business with our tailored banking solutions designed for businesses of all sizes.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img class="card-img-top" src="~/images/online_banking.jpg" alt="Online Banking" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Online Banking</h5>
+                    <p class="card-text">Experience the convenience of managing your finances online with our secure online banking services.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

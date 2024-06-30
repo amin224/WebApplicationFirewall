@@ -1,15 +1,16 @@
-﻿namespace SimpleWebApplication.WebFirewall
+﻿using System.Runtime.CompilerServices;
+
+namespace SimpleWebApplication.WebFirewall
 {
     public static class CustomHeaderSecurity
     {
-        // it can be used after login or some special process from web application
-        public static void AddCustomHeaderAsync(HttpContext context)
+        public static void AddCustomHeaderAsync(HttpContext context, string headerName, string headerValue)
         {
             context.Response.OnStarting(() =>
             {
-                if (!context.Response.Headers.ContainsKey(Settings.CustomHeaderName))
+                if (!context.Response.Headers.ContainsKey(headerName))
                 {
-                    context.Response.Headers.Append(Settings.CustomHeaderName, Settings.CustomHeaderValue);
+                    context.Response.Headers.Append(headerName, headerValue);
                 }
                 return Task.CompletedTask;
             });

@@ -50,7 +50,7 @@ namespace SimpleWebApplication.WebFirewall
             }
             finally
             {
-                context.Request.Body = originalBody;
+                // context.Request.Body = originalBody;
             }
         }
 

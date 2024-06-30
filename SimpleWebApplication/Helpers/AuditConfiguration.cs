@@ -62,7 +62,14 @@ public class AuditConfiguration
     private static void SetCustomField(HttpContext context, string key, object value)
     {
         var auditScope = context.GetCurrentAuditScope();
-        auditScope.SetCustomField(key, value);
+        if (auditScope != null)
+        {
+            auditScope.SetCustomField(key, value);
+        }
+        else
+        {
+            Console.WriteLine("AuditScope is null. Unable to set custom field.");
+        }
     }
 
     public void AuditCustomFields(LogTraceOperation logTrace)

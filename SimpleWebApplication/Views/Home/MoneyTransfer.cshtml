@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Money Transfer";
+}
+
+<h2>Money Transfer</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+        <p>Initial Amount: @ViewBag.InitialAmount</p>
+        <p>Transferred Amount: @ViewBag.TransferredAmount</p>
+        <p>Amount After Transfer: @ViewBag.CurrentAmount</p>
+    </div>
+}
+else if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<form method="post" asp-action="MoneyTransfer">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="iban">Receiver IBAN</label>
+        <input type="text" class="form-control" id="iban" name="iban" required>
+    </div>
+    <div class="form-group">
+        <label for="receiverName">Receiver Name</label>
+        <input type="text" class="form-control" id="receiverName" name="receiverName" required>
+    </div>
+    <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="number" class="form-control" id="amount" name="amount" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Transfer</button>
+</form>
+
+@if (Context.Session.GetString("TotalAmount") != null)
+{
+    <div class="mt-4">
+        <p><strong>Total Amount:</strong> @Context.Session.GetString("TotalAmount")</p>
+    </div>
+}

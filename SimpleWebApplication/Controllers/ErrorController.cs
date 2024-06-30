@@ -6,16 +6,8 @@ namespace SimpleWebApplication.Controllers
     {
         public IActionResult CustomErrorPage()
         {
-            // fetching the error message from temp data
-            if (HttpContext.Items["Exception"] is string errorMessage)
-            {
-                ViewData["ErrorMessage"] = errorMessage;
-            }
-            else
-            {
-                ViewData["ErrorMessage"] = "An unknown error occurred.";
-            }
-
+            var errorMessage = HttpContext.Items["Exception"]?.ToString();
+            ViewData["ErrorMessage"] = errorMessage;
             return View();
         }
     }
