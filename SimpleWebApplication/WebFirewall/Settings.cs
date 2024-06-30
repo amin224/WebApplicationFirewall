@@ -12,6 +12,7 @@
         public static readonly bool isCsrfSecurityActive = true;
         public static readonly bool isFileInclusionSecurityActive = true;
         public static readonly bool isUserAgentFilteringSecurityActive = true;
+        public static readonly bool isByPassSecurityCheckingForApiRequestActive = true;
         public const string CustomHeaderName = "MyProcess-Custom-Header";
         public const string CustomHeaderValue = "XF50SA6V?NN89B0X";
         public const string CsrfToken = "A6YD*!fV?NN89B0";
@@ -29,6 +30,7 @@
             "/js", 
             "/images", 
             "/lib", 
+            "/Error",
             "/favicon.ico"
         };
     }

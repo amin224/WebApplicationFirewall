@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Text;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SimpleWebApplication.Customs;
@@ -29,6 +30,8 @@ builder.Services.AddDbContext<MyAppDbContext>(options =>
 
 // builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
+builder.Services.AddControllersWithViews();
+
 if (isRateLimitingActive)
 {
     builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfigurationService>();
@@ -41,7 +44,6 @@ if (isRateLimitingActive)
     builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 }
 
-builder.Services.AddControllersWithViews();
 builder.Services.AddControllers(configure =>
 {
     AuditConfiguration.AddAudit((configure));
@@ -77,35 +79,41 @@ builder.Services.AddSingleton<IEmailEngine, EmailEngine>();
 //    return new CustomHeaderFilter(auditConfiguration, headerName, headerValue);
 //});
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.LoginPath = "/User/Login";
+})
+.AddJwtBearer("WebFirewall", options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+            builder.Configuration["JwtSettings:SecretKey"])),
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-builder.Services.AddAuthentication(x =>
-    {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer("WebFirewall", options =>
-    {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
-                "P/qVjn2qCz9yZqOebHMZyb0AS0WDTSKl1gV76NCVUcHxOrm+m93Zfen5i0Apx4XGhOPflfXxd7USrkF0zPOm5g==")),
-            ValidIssuer = "Identity",
-            ValidAudience = "WebFirewall",
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
 
 var app = builder.Build();
 
@@ -119,8 +127,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.UseCookiePolicy();
 
 // web firewall
@@ -148,9 +157,7 @@ app.UseCors(options =>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
-app.UseAuthorization();
-app.UseCookiePolicy();
+
 
 app.MapControllerRoute(
     name: "default",

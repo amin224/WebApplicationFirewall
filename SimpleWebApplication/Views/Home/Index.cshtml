@@ -9,8 +9,8 @@
     <p>Sign up today to experience seamless banking with top-notch security and customer support.</p>
     @if (Context.Session.GetString("Username") == null)
     {
-        <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Login" role="button">Login</a>
-        <a class="btn btn-success btn-lg" asp-controller="Home" asp-action="Register" role="button">Create Account</a>
+        <a class="btn btn-primary btn-lg" asp-controller="User" asp-action="Login" role="button">Login</a>
+        <a class="btn btn-success btn-lg" asp-controller="User" asp-action="Register" role="button">Create Account</a>
     }
 </div>
 

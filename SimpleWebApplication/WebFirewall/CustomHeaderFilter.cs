@@ -12,48 +12,18 @@ namespace SimpleWebApplication.WebFirewall
     {
         private readonly AuditConfiguration _auditConfiguration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _headerName;
-        private readonly string _headerValue;
 
-        public CustomHeaderFilter(AuditConfiguration auditConfiguration, string headerName, string headerValue)
+        public CustomHeaderFilter(AuditConfiguration auditConfiguration)
         {
             _auditConfiguration = auditConfiguration;
-            _headerName = headerName;
-            _headerValue = headerValue;
         }
 
         [AuditApi]
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // Check whether custom header is exists and correct
-            //var httpContext = _httpContextAccessor.HttpContext;
-            //string headerName = Settings.CustomHeaderName;
-            //string headerValue = Settings.CustomHeaderValue;
-
-            //if (httpContext.Request.Path.Value.Contains("MyProcess"))
-            //{
-            //    headerName = "MyProcess";
-            //    headerValue = "Pending";
-            //}
-            //else if (httpContext.Request.Path.Value.Contains("MoneyTransfer"))
-            //{
-            //    headerName = "MoneyTransfer";
-            //    headerValue = "Approved";
-            //}
-
-
-            //if (context.HttpContext.Request.Headers.TryGetValue(headerName, out var actualHeaderValue))
-            //{
-            //    if (actualHeaderValue == headerValue)
-            //    {
-            //        await next();
-            //        return;
-            //    }
-            //}
-
-            if (context.HttpContext.Request.Headers.TryGetValue(_headerName, out var actualHeaderValue))
+            if (context.HttpContext.Request.Headers.TryGetValue(Settings.CustomHeaderName, out var headerValue))
             {
-                if (actualHeaderValue == _headerValue)
+                if (headerValue == Settings.CustomHeaderValue)
                 {
                     await next();
                     return;

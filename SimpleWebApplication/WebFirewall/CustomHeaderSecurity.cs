@@ -4,13 +4,13 @@ namespace SimpleWebApplication.WebFirewall
 {
     public static class CustomHeaderSecurity
     {
-        public static void AddCustomHeaderAsync(HttpContext context, string headerName, string headerValue)
+        public static void AddCustomHeaderAsync(HttpContext context)
         {
             context.Response.OnStarting(() =>
             {
-                if (!context.Response.Headers.ContainsKey(headerName))
+                if (!context.Response.Headers.ContainsKey(Settings.CustomHeaderName))
                 {
-                    context.Response.Headers.Append(headerName, headerValue);
+                    context.Response.Headers.Append(Settings.CustomHeaderName, Settings.CustomHeaderValue);
                 }
                 return Task.CompletedTask;
             });

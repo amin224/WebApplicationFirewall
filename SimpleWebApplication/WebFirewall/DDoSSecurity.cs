@@ -8,7 +8,7 @@ namespace SimpleWebApplication.WebFirewall
     public class DDoSSecurity
     {
         private readonly AuditConfiguration _auditConfiguration;
-        private static readonly ConcurrentDictionary<string, ClientRequest> _clientRequest = new ConcurrentDictionary<string, ClientRequest>();
+        public static readonly ConcurrentDictionary<string, ClientRequest> _clientRequest = new ConcurrentDictionary<string, ClientRequest>();
 
         public DDoSSecurity(AuditConfiguration auditConfiguration)
         {

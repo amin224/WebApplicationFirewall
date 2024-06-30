@@ -3,7 +3,7 @@
 }
 
 <h2>Send Document</h2>
-<form asp-action="SendDocument" method="post" enctype="multipart/form-data" id="uploadForm">
+<form asp-controller="Home" asp-action="SendDocument" method="post" enctype="multipart/form-data" id="uploadForm">
     <div class="form-group">
         <label for="file">Choose a file to upload:</label>
         <input type="file" class="form-control" id="file" name="file" required>

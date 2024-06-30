@@ -16,7 +16,17 @@ namespace SimpleWebApplication.WebFirewall
         [AuditApi]
         public async Task<bool> CheckRequestAsync(HttpContext context)
         {
+            if (Settings.isByPassSecurityCheckingForApiRequestActive)
+            {
+                var contentType = context.Request.Headers["Content-Type"].ToString();
+                var isApiRequest = contentType.Contains("application/json", StringComparison.OrdinalIgnoreCase);
+
+                if (isApiRequest) return true;
+            }
+
+
             var userAgent = context.Request.Headers["User-Agent"].ToString();
+            
             if (!Settings.AllowedUserAgents.Any(ua => userAgent.Contains(ua)))
             {
                 // Log user agent is not allowed

@@ -20,7 +20,7 @@ else if (ViewBag.ErrorMessage != null)
     </div>
 }
 
-<form method="post" asp-action="MoneyTransfer">
+<form method="post" asp-controller="Transaction" asp-action="MoneyTransfer">
     @Html.AntiForgeryToken()
     <div class="form-group">
         <label for="iban">Receiver IBAN</label>

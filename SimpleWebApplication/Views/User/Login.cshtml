@@ -13,7 +13,7 @@
 
 <p></p>
 
-<form method="post" asp-action="Login">
+<form method="post" asp-controller="User" asp-action="Login">
     <div class="form-group">
         <label for="username">Username</label>
         <input type="text" class="form-control" id="username" name="username" required>
@@ -24,4 +24,5 @@
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
     <a href="@Url.Action("Register", "Home")" class="btn btn-secondary" style="background-color: orange; color: white;">Create Account</a>
+    <a href="@Url.Action("ForgotPassword", "User")" class="btn btn-link">Forgot Password?</a>
 </form>

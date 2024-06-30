@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using System.Security.Claims
+
+@{
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var isApprovedClaim = User.Claims.FirstOrDefault(c => c.Type == "IsApproved")?.Value;
+    var isApproved = !string.IsNullOrEmpty(isApprovedClaim) && isApprovedClaim.Equals("true", StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -29,19 +38,25 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="SendDocument">Send Document</a>
                         </li>
-                        @if (Context.Session.GetString("Username") != null)
+                        @if (isAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="MyAccount">My Account</a>
+                                <a class="nav-link" asp-controller="User" asp-action="MyAccount">My Account</a>
                             </li>
+                            @if (isApproved)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Transaction" asp-action="MoneyTransfer">Money Transfer</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="User" asp-action="MyProcess">My Process</a>
+                                </li>
+                            }
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="MoneyTransfer">Money Transfer</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="MyProcess">My Process</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Logout">Log Out</a>
+                                <a class="nav-link" asp-controller="User" asp-action="Logout">Log Out</a>
                             </li>
                         }
                     </ul>

@@ -19,7 +19,7 @@ else if (ViewBag.ErrorMessage != null)
 
 <p></p>
 
-<form method="post" asp-action="Register" id="registrationForm">
+<form method="post" asp-controller="User" asp-action="Register" id="registrationForm">
     @Html.AntiForgeryToken()
     <div class="form-group">
         <label for="username">Username</label>
