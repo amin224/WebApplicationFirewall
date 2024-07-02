@@ -18,13 +18,13 @@ namespace SimpleWebApplication.WebFirewall
             _userAgentFilteringSecurity = new UserAgentFilteringSecurity(auditConfiguration);
             _sqlInjectionSecurity = new SqlInjectionSecurity(auditConfiguration);
             _antiXssSecurity = new AntiXssSecurity(auditConfiguration);
-            _fileInclusionSecurity = new SimpleWebApplication.WebFirewall.FileInclusionSecurity(auditConfiguration);
+            _fileInclusionSecurity = new FileInclusionSecurity(auditConfiguration);
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
 
-            // if request path exist in ignored path list then bypass security check
+            // if request exist in ignored path list then bypass security check
             var requestPath = context.Request.Path.ToString();
             if (Settings.IgnoredPaths.Any(path => requestPath.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
             {
@@ -39,6 +39,11 @@ namespace SimpleWebApplication.WebFirewall
                     if (!await _dDoSSecurity.CheckRequestAsync(context)) return;
                 }
 
+                if (Settings.isFileInclusionSecurityActive)
+                {
+                    if (!await _fileInclusionSecurity.CheckRequestAsync(context)) return;
+                }
+
                 if (Settings.isSqlInjectionSecurityActive)
                 {
                     if (!await _sqlInjectionSecurity.CheckRequestAsync(context)) return;
@@ -47,11 +52,6 @@ namespace SimpleWebApplication.WebFirewall
                 if (Settings.isAntiXssSecurityActive)
                 {
                     if (!await _antiXssSecurity.CheckRequestAsync(context)) return;
-                }
-
-                if (Settings.isFileInclusionSecurityActive)
-                {
-                    if (!await _fileInclusionSecurity.CheckRequestAsync(context)) return;
                 }
 
                 if (Settings.isUserAgentFilteringSecurityActive)

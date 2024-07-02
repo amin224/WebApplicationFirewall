@@ -56,7 +56,8 @@ namespace SimpleWebApplication.WebFirewall
                 using (var reader = new StreamReader(memoryStream, leaveOpen: true))
                 {
                     var content = await reader.ReadToEndAsync();
-                    if (MyRegex().IsMatch(content))
+                    //if (MyRegex().IsMatch(content))
+                    if (MaliciousPatterns.Any(pattern => Regex.IsMatch(content, pattern, RegexOptions.IgnoreCase)))
                     {
                         // Log the file inclusion attack
                         var log = new LogTraceOperation(true, "FileInclusion");
@@ -117,7 +118,7 @@ namespace SimpleWebApplication.WebFirewall
  
             return AllowedFileExtensions.Contains(Path.GetExtension(uri.LocalPath).ToLower());
         }
-        
+
         [GeneratedRegex(@"<script\b[^>]*>([\s\S]*?)<\/script>", RegexOptions.IgnoreCase, "en-US")]
         private static partial Regex MyRegex();
     }
